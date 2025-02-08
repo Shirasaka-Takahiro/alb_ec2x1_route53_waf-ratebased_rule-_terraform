@@ -15,6 +15,8 @@ resource "aws_cloudwatch_metric_alarm" "default" {
   alarm_actions       = [each.value["sns_topic_arn"]]
   ok_actions          = [each.value["sns_topic_arn"]]
   dimensions = {
-    #DBInstanceIdentifier = each.value["identifier"]
+  WebACL = "${each.value["project"]}-${each.value["env"]}-acl",
+  Region = "ap-northeast-1",
+  Rule = each.value["waf_rule_name"]
   }
 }

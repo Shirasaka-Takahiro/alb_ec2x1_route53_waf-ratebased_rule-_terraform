@@ -78,11 +78,11 @@ module "ec2" {
 module "alb" {
   source = "../../module/alb"
 
-  vpc_id                   = module.network.vpc_id
-  general_config           = var.general_config
-  public_subnet_ids        = module.network.public_subnet_ids
-  alb_http_sg_id           = module.alb_http_sg.security_group_id
-  instance_ids             = module.ec2.instance_ids
+  vpc_id            = module.network.vpc_id
+  general_config    = var.general_config
+  public_subnet_ids = module.network.public_subnet_ids
+  alb_http_sg_id    = module.alb_http_sg.security_group_id
+  instance_ids      = module.ec2.instance_ids
 }
 
 ##DNS
@@ -116,27 +116,34 @@ module "waf" {
 }
 
 ##SNS
-#module "sns" {
-#  source = "../../module/sns"
+module "sns" {
+  source = "../../module/sns"
 
-#  general_config   = var.general_config
-#  topic_name = var.topic_name
-#  sns_email  = var.sns_email
-#}
+  general_config = var.general_config
+  topic_name     = var.topic_name
+  sns_email      = var.sns_email
+}
 
 ##CloudWatch
-#cloudwatch_alarms = {
-#    cpuutilization = {
-#      project                 = var.general_config["project"]
-#      env                     = var.general_config["env"]
-#      cwa_metric_name         = "BlockedRequests"
-#      cwa_namespace = "AWS/WAFV2"
-#      cwa_statistic           = "Maximum"
-#      cwa_period              = 300
-#      cwa_threshold           = 1
-#      cwa_comparison_operator = "GreaterThanOrEqualToThreshold"
-#      cwa_evaluation_periods  = 1
-#      cwa_actions             = var.cwa_actions
-#      sns_topic_arn           = module.sns.sns_topic_arn
-#    }
-#}
+module "cloudwatch" {
+  source = "../../module/cloudwatch"
+
+  general_config = var.general_config
+  cloudwatch_alarms = {
+    ratebased_block_request = {
+      project                 = var.general_config["project"]
+      env                     = var.general_config["env"]
+      cwa_metric_name         = "BlockedRequests"
+      cwa_namespace           = "AWS/WAFV2"
+      cwa_statistic           = "Maximum"
+      cwa_period              = 300
+      cwa_threshold           = 1
+      cwa_comparison_operator = "GreaterThanOrEqualToThreshold"
+      cwa_evaluation_periods  = 1
+      cwa_actions             = var.cwa_actions
+      sns_topic_arn           = module.sns.sns_topic_arn
+      web_acl_arn = module.waf.web_acl_arn
+      waf_rule_name = "AWSRateBasedRuleMetric"
+    }
+  }
+}

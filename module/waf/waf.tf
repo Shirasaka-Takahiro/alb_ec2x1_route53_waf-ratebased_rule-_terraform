@@ -18,8 +18,8 @@ resource "aws_wafv2_web_acl" "default" {
 
     statement {
       rate_based_statement {
-        limit              = var.rate_based_limit
-        aggregate_key_type = "IP"
+        limit                 = var.rate_based_limit
+        aggregate_key_type    = "IP"
         evaluation_window_sec = 60
 
         scope_down_statement {

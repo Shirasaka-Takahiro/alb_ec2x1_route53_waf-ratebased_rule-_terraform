@@ -6,6 +6,7 @@ variable "cloudwatch_alarms" {
     project                 = string
     env                     = string
     cwa_metric_name         = string
+    cwa_namespace           = string
     cwa_statistic           = string
     cwa_period              = number
     cwa_threshold           = number
@@ -13,6 +14,7 @@ variable "cloudwatch_alarms" {
     cwa_evaluation_periods  = number
     cwa_actions             = bool
     sns_topic_arn           = string
-    identifier = string
+    web_acl_arn = string
+    waf_rule_name = string
   }))
 }
